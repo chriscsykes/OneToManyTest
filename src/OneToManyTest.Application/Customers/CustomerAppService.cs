@@ -40,8 +40,8 @@ namespace OneToManyTest.Customers
 
         public virtual async Task<PagedResultDto<CustomerWithNavigationPropertiesDto>> GetListAsync(GetCustomersInput input)
         {
-            var totalCount = await _customerRepository.GetCountAsync(input.FilterText, input.FirstName, input.LastName, input.Email, input.OrderId);
-            var items = await _customerRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.FirstName, input.LastName, input.Email, input.OrderId, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var totalCount = await _customerRepository.GetCountAsync(input.FilterText, input.FirstName, input.LastName, input.Email, input.Address, input.OrderId);
+            var items = await _customerRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.FirstName, input.LastName, input.Email, input.Address, input.OrderId, input.Sorting, input.MaxResultCount, input.SkipCount);
 
             return new PagedResultDto<CustomerWithNavigationPropertiesDto>
             {
@@ -88,7 +88,7 @@ namespace OneToManyTest.Customers
         {
 
             var customer = await _customerManager.CreateAsync(
-            input.OrderId, input.FirstName, input.LastName, input.Email
+            input.OrderId, input.FirstName, input.LastName, input.Email, input.Address
             );
 
             return ObjectMapper.Map<Customer, CustomerDto>(customer);
@@ -100,7 +100,7 @@ namespace OneToManyTest.Customers
 
             var customer = await _customerManager.UpdateAsync(
             id,
-            input.OrderId, input.FirstName, input.LastName, input.Email, input.ConcurrencyStamp
+            input.OrderId, input.FirstName, input.LastName, input.Email, input.Address, input.ConcurrencyStamp
             );
 
             return ObjectMapper.Map<Customer, CustomerDto>(customer);
@@ -115,7 +115,7 @@ namespace OneToManyTest.Customers
                 throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
             }
 
-            var items = await _customerRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName, input.Email);
+            var items = await _customerRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName, input.Email, input.Address);
 
             var memoryStream = new MemoryStream();
             await memoryStream.SaveAsAsync(ObjectMapper.Map<List<Customer>, List<CustomerExcelDto>>(items));

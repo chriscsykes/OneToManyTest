@@ -22,6 +22,9 @@ namespace OneToManyTest.Customers
 
         [NotNull]
         public virtual string Email { get; set; }
+
+        [CanBeNull]
+        public virtual string Address { get; set; }
         public Guid? OrderId { get; set; }
 
         public Customer()
@@ -29,7 +32,7 @@ namespace OneToManyTest.Customers
 
         }
 
-        public Customer(Guid id, Guid? orderId, string firstName, string lastName, string email)
+        public Customer(Guid id, Guid? orderId, string firstName, string lastName, string email, string address)
         {
 
             Id = id;
@@ -37,6 +40,7 @@ namespace OneToManyTest.Customers
             FirstName = firstName;
             LastName = lastName;
             Email = email;
+            Address = address;
             OrderId = orderId;
         }
 

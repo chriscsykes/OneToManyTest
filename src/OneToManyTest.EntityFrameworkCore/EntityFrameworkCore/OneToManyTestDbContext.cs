@@ -114,6 +114,14 @@ public class OneToManyTestDbContext :
         }
         if (builder.IsHostDatabase())
         {
+
+        }
+        if (builder.IsHostDatabase())
+        {
+
+        }
+        if (builder.IsHostDatabase())
+        {
             builder.Entity<Customer>(b =>
 {
     b.ToTable(OneToManyTestConsts.DbTablePrefix + "Customers", OneToManyTestConsts.DbSchema);
@@ -121,6 +129,7 @@ public class OneToManyTestDbContext :
     b.Property(x => x.FirstName).HasColumnName(nameof(Customer.FirstName));
     b.Property(x => x.LastName).HasColumnName(nameof(Customer.LastName));
     b.Property(x => x.Email).HasColumnName(nameof(Customer.Email)).IsRequired();
+    b.Property(x => x.Address).HasColumnName(nameof(Customer.Address));
     b.HasOne<Order>().WithMany().HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.NoAction);
 });
 

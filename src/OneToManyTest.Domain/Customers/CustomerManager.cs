@@ -19,11 +19,11 @@ namespace OneToManyTest.Customers
         }
 
         public async Task<Customer> CreateAsync(
-        Guid? orderId, string firstName, string lastName, string email)
+        Guid? orderId, string firstName, string lastName, string email, string address)
         {
             var customer = new Customer(
              GuidGenerator.Create(),
-             orderId, firstName, lastName, email
+             orderId, firstName, lastName, email, address
              );
 
             return await _customerRepository.InsertAsync(customer);
@@ -31,7 +31,7 @@ namespace OneToManyTest.Customers
 
         public async Task<Customer> UpdateAsync(
             Guid id,
-            Guid? orderId, string firstName, string lastName, string email, [CanBeNull] string concurrencyStamp = null
+            Guid? orderId, string firstName, string lastName, string email, string address, [CanBeNull] string concurrencyStamp = null
         )
         {
             var queryable = await _customerRepository.GetQueryableAsync();
@@ -43,6 +43,7 @@ namespace OneToManyTest.Customers
             customer.FirstName = firstName;
             customer.LastName = lastName;
             customer.Email = email;
+            customer.Address = address;
 
             customer.SetConcurrencyStampIfNotNull(concurrencyStamp);
             return await _customerRepository.UpdateAsync(customer);

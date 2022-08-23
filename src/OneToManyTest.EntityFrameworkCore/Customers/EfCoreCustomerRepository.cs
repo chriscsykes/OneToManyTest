@@ -36,6 +36,7 @@ namespace OneToManyTest.Customers
             string firstName = null,
             string lastName = null,
             string email = null,
+            string address = null,
             Guid? orderId = null,
             string sorting = null,
             int maxResultCount = int.MaxValue,
@@ -43,7 +44,7 @@ namespace OneToManyTest.Customers
             CancellationToken cancellationToken = default)
         {
             var query = await GetQueryForNavigationPropertiesAsync();
-            query = ApplyFilter(query, filterText, firstName, lastName, email, orderId);
+            query = ApplyFilter(query, filterText, firstName, lastName, email, address, orderId);
             query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? CustomerConsts.GetDefaultSorting(true) : sorting);
             return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
         }
@@ -67,13 +68,15 @@ namespace OneToManyTest.Customers
             string firstName = null,
             string lastName = null,
             string email = null,
+            string address = null,
             Guid? orderId = null)
         {
             return query
-                .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Customer.FirstName.Contains(filterText) || e.Customer.LastName.Contains(filterText) || e.Customer.Email.Contains(filterText))
+                .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Customer.FirstName.Contains(filterText) || e.Customer.LastName.Contains(filterText) || e.Customer.Email.Contains(filterText) || e.Customer.Address.Contains(filterText))
                     .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.Customer.FirstName.Contains(firstName))
                     .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.Customer.LastName.Contains(lastName))
                     .WhereIf(!string.IsNullOrWhiteSpace(email), e => e.Customer.Email.Contains(email))
+                    .WhereIf(!string.IsNullOrWhiteSpace(address), e => e.Customer.Address.Contains(address))
                     .WhereIf(orderId != null && orderId != Guid.Empty, e => e.Order != null && e.Order.Id == orderId);
         }
 
@@ -82,12 +85,13 @@ namespace OneToManyTest.Customers
             string firstName = null,
             string lastName = null,
             string email = null,
+            string address = null,
             string sorting = null,
             int maxResultCount = int.MaxValue,
             int skipCount = 0,
             CancellationToken cancellationToken = default)
         {
-            var query = ApplyFilter((await GetQueryableAsync()), filterText, firstName, lastName, email);
+            var query = ApplyFilter((await GetQueryableAsync()), filterText, firstName, lastName, email, address);
             query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? CustomerConsts.GetDefaultSorting(false) : sorting);
             return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
         }
@@ -97,11 +101,12 @@ namespace OneToManyTest.Customers
             string firstName = null,
             string lastName = null,
             string email = null,
+            string address = null,
             Guid? orderId = null,
             CancellationToken cancellationToken = default)
         {
             var query = await GetQueryForNavigationPropertiesAsync();
-            query = ApplyFilter(query, filterText, firstName, lastName, email, orderId);
+            query = ApplyFilter(query, filterText, firstName, lastName, email, address, orderId);
             return await query.LongCountAsync(GetCancellationToken(cancellationToken));
         }
 
@@ -110,13 +115,15 @@ namespace OneToManyTest.Customers
             string filterText,
             string firstName = null,
             string lastName = null,
-            string email = null)
+            string email = null,
+            string address = null)
         {
             return query
-                    .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.FirstName.Contains(filterText) || e.LastName.Contains(filterText) || e.Email.Contains(filterText))
+                    .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.FirstName.Contains(filterText) || e.LastName.Contains(filterText) || e.Email.Contains(filterText) || e.Address.Contains(filterText))
                     .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.FirstName.Contains(firstName))
                     .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.LastName.Contains(lastName))
-                    .WhereIf(!string.IsNullOrWhiteSpace(email), e => e.Email.Contains(email));
+                    .WhereIf(!string.IsNullOrWhiteSpace(email), e => e.Email.Contains(email))
+                    .WhereIf(!string.IsNullOrWhiteSpace(address), e => e.Address.Contains(address));
         }
     }
 }

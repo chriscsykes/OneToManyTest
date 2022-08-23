@@ -82,6 +82,28 @@
       "EnumValues": null,
       "IsSelected": true,
       "OrdinalIndex": 0
+    },
+    {
+      "Id": "e56e635a-bcc9-4055-89be-6150b6157394",
+      "Name": "Address",
+      "Type": "string",
+      "EnumType": "",
+      "EnumNamespace": "",
+      "EnumAngularImport": "shared/enums",
+      "EnumFilePath": null,
+      "DefaultValue": null,
+      "IsNullable": false,
+      "IsRequired": false,
+      "IsTextArea": false,
+      "MinLength": null,
+      "MaxLength": null,
+      "SortOrder": 0,
+      "SortType": 0,
+      "Regex": "",
+      "EmailValidation": false,
+      "EnumValues": null,
+      "IsSelected": true,
+      "OrdinalIndex": 0
     }
   ],
   "NavigationProperties": [

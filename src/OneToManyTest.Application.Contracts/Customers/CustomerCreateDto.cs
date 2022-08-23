@@ -10,6 +10,7 @@ namespace OneToManyTest.Customers
         public string LastName { get; set; }
         [Required]
         public string Email { get; set; }
+        public string Address { get; set; }
         public Guid? OrderId { get; set; }
     }
 }

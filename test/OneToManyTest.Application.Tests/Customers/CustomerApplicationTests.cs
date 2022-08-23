@@ -27,19 +27,19 @@ namespace OneToManyTest.Customers
             // Assert
             result.TotalCount.ShouldBe(2);
             result.Items.Count.ShouldBe(2);
-            result.Items.Any(x => x.Customer.Id == Guid.Parse("55ada2cc-664d-4db8-99c4-848c41e3fb44")).ShouldBe(true);
-            result.Items.Any(x => x.Customer.Id == Guid.Parse("690f27ce-e048-4f6d-966e-15bdc69ce5b0")).ShouldBe(true);
+            result.Items.Any(x => x.Customer.Id == Guid.Parse("4fa9098a-2453-498d-9d57-da3551ce969f")).ShouldBe(true);
+            result.Items.Any(x => x.Customer.Id == Guid.Parse("753400d3-f59b-4771-b9da-0bcfee148116")).ShouldBe(true);
         }
 
         [Fact]
         public async Task GetAsync()
         {
             // Act
-            var result = await _customersAppService.GetAsync(Guid.Parse("55ada2cc-664d-4db8-99c4-848c41e3fb44"));
+            var result = await _customersAppService.GetAsync(Guid.Parse("4fa9098a-2453-498d-9d57-da3551ce969f"));
 
             // Assert
             result.ShouldNotBeNull();
-            result.Id.ShouldBe(Guid.Parse("55ada2cc-664d-4db8-99c4-848c41e3fb44"));
+            result.Id.ShouldBe(Guid.Parse("4fa9098a-2453-498d-9d57-da3551ce969f"));
         }
 
         [Fact]
@@ -48,9 +48,10 @@ namespace OneToManyTest.Customers
             // Arrange
             var input = new CustomerCreateDto
             {
-                FirstName = "7f87a134a6c64decb10ab5cc7b9db8416dfc6dc5a55a",
-                LastName = "1a26019b983846ad8b1e1d8d8c9e76eb020b13c14d3f4754a2b5a7bc4",
-                Email = "4cf188fcf8db451aae9bce62215c98574d151cf7006443999ef272120b30"
+                FirstName = "cd92343430c34801957c1bec8dc34ad9616f0bb242e742a29d72ce6a11cd0098921dc69c50664f598b7ce254",
+                LastName = "533fc502acab4e1f8cc6d2bbe8a",
+                Email = "fdd726d2ce55472ab44b1eb2502a5aab221b18420ba",
+                Address = "d998c8c677c54a6dbdef869c"
             };
 
             // Act
@@ -60,9 +61,10 @@ namespace OneToManyTest.Customers
             var result = await _customerRepository.FindAsync(c => c.Id == serviceResult.Id);
 
             result.ShouldNotBe(null);
-            result.FirstName.ShouldBe("7f87a134a6c64decb10ab5cc7b9db8416dfc6dc5a55a");
-            result.LastName.ShouldBe("1a26019b983846ad8b1e1d8d8c9e76eb020b13c14d3f4754a2b5a7bc4");
-            result.Email.ShouldBe("4cf188fcf8db451aae9bce62215c98574d151cf7006443999ef272120b30");
+            result.FirstName.ShouldBe("cd92343430c34801957c1bec8dc34ad9616f0bb242e742a29d72ce6a11cd0098921dc69c50664f598b7ce254");
+            result.LastName.ShouldBe("533fc502acab4e1f8cc6d2bbe8a");
+            result.Email.ShouldBe("fdd726d2ce55472ab44b1eb2502a5aab221b18420ba");
+            result.Address.ShouldBe("d998c8c677c54a6dbdef869c");
         }
 
         [Fact]
@@ -71,31 +73,33 @@ namespace OneToManyTest.Customers
             // Arrange
             var input = new CustomerUpdateDto()
             {
-                FirstName = "36ef3e2f3d164924af87f214f1f70d884e8d0a15d38b4cdca917c9f007e071c28a91450742eb4ef7ba",
-                LastName = "6da33ae0b5364d",
-                Email = "81d94ffc0fcb40e5ad1f3a9499b1e1363ee760225c274e4da1d0925ba4f4b18a"
+                FirstName = "8b10f0f2ae3f4747aae6919faf002e6fdfa88f8fe2ea45b0b94900",
+                LastName = "e935890b7f2445a788af3724abc7204a842663ce89d946c382a",
+                Email = "d32e4210d3f24088bbe2e817520a7589b94",
+                Address = "5df05f324ffc42ea8c8ebad1760f59f3e20640da90c040e594af9f8a3c31d02ce90b08e6b9554ac98c1"
             };
 
             // Act
-            var serviceResult = await _customersAppService.UpdateAsync(Guid.Parse("55ada2cc-664d-4db8-99c4-848c41e3fb44"), input);
+            var serviceResult = await _customersAppService.UpdateAsync(Guid.Parse("4fa9098a-2453-498d-9d57-da3551ce969f"), input);
 
             // Assert
             var result = await _customerRepository.FindAsync(c => c.Id == serviceResult.Id);
 
             result.ShouldNotBe(null);
-            result.FirstName.ShouldBe("36ef3e2f3d164924af87f214f1f70d884e8d0a15d38b4cdca917c9f007e071c28a91450742eb4ef7ba");
-            result.LastName.ShouldBe("6da33ae0b5364d");
-            result.Email.ShouldBe("81d94ffc0fcb40e5ad1f3a9499b1e1363ee760225c274e4da1d0925ba4f4b18a");
+            result.FirstName.ShouldBe("8b10f0f2ae3f4747aae6919faf002e6fdfa88f8fe2ea45b0b94900");
+            result.LastName.ShouldBe("e935890b7f2445a788af3724abc7204a842663ce89d946c382a");
+            result.Email.ShouldBe("d32e4210d3f24088bbe2e817520a7589b94");
+            result.Address.ShouldBe("5df05f324ffc42ea8c8ebad1760f59f3e20640da90c040e594af9f8a3c31d02ce90b08e6b9554ac98c1");
         }
 
         [Fact]
         public async Task DeleteAsync()
         {
             // Act
-            await _customersAppService.DeleteAsync(Guid.Parse("55ada2cc-664d-4db8-99c4-848c41e3fb44"));
+            await _customersAppService.DeleteAsync(Guid.Parse("4fa9098a-2453-498d-9d57-da3551ce969f"));
 
             // Assert
-            var result = await _customerRepository.FindAsync(c => c.Id == Guid.Parse("55ada2cc-664d-4db8-99c4-848c41e3fb44"));
+            var result = await _customerRepository.FindAsync(c => c.Id == Guid.Parse("4fa9098a-2453-498d-9d57-da3551ce969f"));
 
             result.ShouldBeNull();
         }

@@ -93,6 +93,11 @@
               </DataGridColumn>
 
               <DataGridColumn TItem="CustomerWithNavigationPropertiesDto"
+                      Field="Customer.Address"
+                      Caption="@L["Address"]">
+              </DataGridColumn>
+
+              <DataGridColumn TItem="CustomerWithNavigationPropertiesDto"
                       Field="Order.Item"
                       Caption="@L["Order"]">
               </DataGridColumn>
@@ -145,6 +150,18 @@
                         <Field>
                             <FieldLabel>@L["Email"] *</FieldLabel>
                             <TextEdit @bind-Text="@NewCustomer.Email" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Address"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewCustomer.Address" >
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
@@ -225,6 +242,18 @@
                         <Field>
                             <FieldLabel>@L["Email"] *</FieldLabel>
                             <TextEdit @bind-Text="@EditingCustomer.Email" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Address"]</FieldLabel>
+                            <TextEdit @bind-Text="@EditingCustomer.Address" >
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>

@@ -58,6 +58,7 @@
     "Orders": "Orders",
     "NewOrder": "New Order",
     "Menu:Orders": "Orders",
-    "Order": "Order"
+    "Order": "Order",
+    "Address": "Address"
   }
 }

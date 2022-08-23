@@ -18,6 +18,7 @@ namespace OneToManyTest.Customers
             string firstName = null,
             string lastName = null,
             string email = null,
+            string address = null,
             Guid? orderId = null,
             string sorting = null,
             int maxResultCount = int.MaxValue,
@@ -30,6 +31,7 @@ namespace OneToManyTest.Customers
                     string firstName = null,
                     string lastName = null,
                     string email = null,
+                    string address = null,
                     string sorting = null,
                     int maxResultCount = int.MaxValue,
                     int skipCount = 0,
@@ -41,6 +43,7 @@ namespace OneToManyTest.Customers
             string firstName = null,
             string lastName = null,
             string email = null,
+            string address = null,
             Guid? orderId = null,
             CancellationToken cancellationToken = default);
     }
