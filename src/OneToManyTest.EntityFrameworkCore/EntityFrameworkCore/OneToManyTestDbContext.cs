@@ -1,3 +1,4 @@
+using OneToManyTest.Hobbies;
 using OneToManyTest.Orders;
 using OneToManyTest.Customers;
 using Volo.Abp.EntityFrameworkCore.Modeling;
@@ -31,6 +32,7 @@ public class OneToManyTestDbContext :
     IIdentityProDbContext,
     ISaasDbContext
 {
+    public DbSet<Hobby> Hobbies { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Customer> Customers { get; set; }
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
@@ -131,6 +133,21 @@ public class OneToManyTestDbContext :
     b.Property(x => x.Email).HasColumnName(nameof(Customer.Email)).IsRequired();
     b.Property(x => x.Address).HasColumnName(nameof(Customer.Address));
     b.HasOne<Order>().WithMany().HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.NoAction);
+});
+
+        }
+        if (builder.IsHostDatabase())
+        {
+
+        }
+        if (builder.IsHostDatabase())
+        {
+            builder.Entity<Hobby>(b =>
+{
+    b.ToTable(OneToManyTestConsts.DbTablePrefix + "Hobbies", OneToManyTestConsts.DbSchema);
+    b.ConfigureByConvention();
+    b.Property(x => x.Name).HasColumnName(nameof(Hobby.Name)).IsRequired();
+    b.Property(x => x.YearsPerformed).HasColumnName(nameof(Hobby.YearsPerformed));
 });
 
         }

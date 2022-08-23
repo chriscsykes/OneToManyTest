@@ -1,0 +1,201 @@
+@page "/hobbies"
+@attribute [Authorize(OneToManyTestPermissions.Hobbies.Default)]
+@using OneToManyTest.Hobbies
+@using OneToManyTest.Localization
+@using OneToManyTest.Shared
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components.Web
+@using Blazorise
+@using Blazorise.Components
+@using Blazorise.DataGrid
+@using Volo.Abp.BlazoriseUI
+@using Volo.Abp.BlazoriseUI.Components
+@using Volo.Abp.ObjectMapping
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using OneToManyTest.Permissions
+@using Microsoft.AspNetCore.Components
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Http.Client
+@inherits OneToManyTestComponentBase
+@inject IHobbiesAppService HobbiesAppService
+@inject IUiMessageService UiMessageService
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+@* ************************* PAGE HEADER ************************* *@
+<PageHeader Title="@L["Hobbies"]" BreadcrumbItems="BreadcrumbItems" Toolbar="Toolbar">
+
+</PageHeader>
+
+@* ************************* SEARCH ************************* *@
+<Card>
+    <CardBody>
+        <Form id="HobbySearchForm" class="mb-3">
+            <Addons>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit @bind-Text="@Filter.FilterText"
+                              Autofocus="true"
+                              Placeholder="@L["Search"]">
+                    </TextEdit>
+                </Addon>
+                <Addon AddonType="AddonType.End">
+                    <SubmitButton Form="HobbySearchForm" Clicked="GetHobbiesAsync">
+                        <Icon Name="IconName.Search" Class="me-1"></Icon>@L["Search"]
+                    </SubmitButton>
+                </Addon>
+            </Addons>
+        </Form>
+    </CardBody>
+</Card>
+
+@* ************************* DATA GRID ************************* *@
+<Card>
+    <CardBody>
+        <DataGrid TItem="HobbyDto"
+                  Data="HobbyList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  Responsive="true"
+                  PageSize="PageSize">
+            <DataGridColumns>
+                <DataGridEntityActionsColumn TItem="HobbyDto" @ref="@EntityActionsColumn">
+                    <DisplayTemplate>
+                        <EntityActions TItem="HobbyDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="HobbyDto"
+                                          Visible="@CanEditHobby"
+                                          Clicked="async () => await OpenEditHobbyModalAsync(context)"
+                                          Text="@L["Edit"]"></EntityAction>
+                            <EntityAction TItem="HobbyDto"
+                                          Visible="@CanDeleteHobby"
+                                          Clicked="() => DeleteHobbyAsync(context)"
+                                          ConfirmationMessage="@(()=> L["DeleteConfirmationMessage"])"
+                                          Text="@L["Delete"]"></EntityAction>
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridEntityActionsColumn>
+               
+              <DataGridColumn TItem="HobbyDto"
+                      Field="Name"
+                      Caption="@L["Name"]">
+              </DataGridColumn>
+
+              <DataGridColumn TItem="HobbyDto"
+                      Field="YearsPerformed"
+                      Caption="@L["YearsPerformed"]">
+              </DataGridColumn>
+
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+@* ************************* CREATE MODAL ************************* *@
+<Modal @ref="CreateHobbyModal" Closing="@CreateHobbyModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered="true">
+        <Form id="CreateHobbyForm">
+            <ModalHeader>
+                <ModalTitle>@L["NewHobby"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateHobbyModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@NewHobbyValidations"
+                            Mode="ValidationMode.Auto"
+                            Model="@NewHobby"
+                            ValidateOnLoad="false">
+                     
+                    
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Name"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewHobby.Name" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["YearsPerformed"]</FieldLabel>
+                            <NumericPicker TValue="int" @bind-Value="@NewHobby.YearsPerformed"  Decimals="0">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                             </NumericPicker>
+                        </Field>
+                     </Validation>
+
+
+                    
+                    
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateHobbyModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateHobbyForm" Clicked="CreateHobbyAsync" />
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@* ************************* EDIT MODAL ************************* *@
+<Modal @ref="EditHobbyModal" Closing="@EditHobbyModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered="true">
+        <Form id="EditHobbyForm">
+            <ModalHeader>
+                <ModalTitle>@L["Update"]</ModalTitle>
+                <CloseButton Clicked="CloseEditHobbyModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@EditingHobbyValidations"
+                            Mode="ValidationMode.Auto"
+                            Model="@EditingHobby"
+                            ValidateOnLoad="false">
+                     
+                    
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Name"] *</FieldLabel>
+                            <TextEdit @bind-Text="@EditingHobby.Name" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["YearsPerformed"]</FieldLabel>
+                            <NumericPicker TValue="int" @bind-Value="@EditingHobby.YearsPerformed"  Decimals="0">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                             </NumericPicker>
+                        </Field>
+                     </Validation>
+
+
+                    
+                    
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseEditHobbyModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateHobbyForm" Clicked="UpdateHobbyAsync" />
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>

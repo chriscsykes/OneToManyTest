@@ -11,4 +11,6 @@ public class OneToManyTestMenus
 
     public const string Orders = Prefix + ".Orders";
 
+    public const string Hobbies = Prefix + ".Hobbies";
+
 }

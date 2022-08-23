@@ -59,6 +59,14 @@
     "NewOrder": "New Order",
     "Menu:Orders": "Orders",
     "Order": "Order",
-    "Address": "Address"
+    "Address": "Address",
+    "Permission:Hobbies": "Hobbies",
+    "Name": "Name",
+    "YearsPerformed": "Years Performed",
+    "MinYearsPerformed": "Min Years Performed",
+    "MaxYearsPerformed": "Max Years Performed",
+    "Hobbies": "Hobbies",
+    "NewHobby": "New Hobby",
+    "Menu:Hobbies": "Hobbies"
   }
 }

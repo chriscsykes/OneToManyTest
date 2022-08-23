@@ -126,6 +126,15 @@ public class OneToManyTestMenuContributor : IMenuContributor
                 icon: "fa fa-file-alt",
                 requiredPermissionName: OneToManyTestPermissions.Orders.Default)
         );
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                OneToManyTestMenus.Hobbies,
+                l["Menu:Hobbies"],
+                url: "/hobbies",
+                icon: "fa fa-file-alt",
+                requiredPermissionName: OneToManyTestPermissions.Hobbies.Default)
+        );
         return Task.CompletedTask;
     }
 }

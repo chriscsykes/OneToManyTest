@@ -1,3 +1,4 @@
+using OneToManyTest.Hobbies;
 using OneToManyTest.Orders;
 using OneToManyTest.Customers;
 using System;
@@ -53,6 +54,8 @@ public class OneToManyTestEntityFrameworkCoreModule : AbpModule
             options.AddRepository<Customer, Customers.EfCoreCustomerRepository>();
 
             options.AddRepository<Order, Orders.EfCoreOrderRepository>();
+
+            options.AddRepository<Hobby, Hobbies.EfCoreHobbyRepository>();
 
         });
 

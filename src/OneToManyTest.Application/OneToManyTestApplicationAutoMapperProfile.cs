@@ -1,3 +1,4 @@
+using OneToManyTest.Hobbies;
 using OneToManyTest.Orders;
 using System;
 using OneToManyTest.Shared;
@@ -23,5 +24,8 @@ public class OneToManyTestApplicationAutoMapperProfile : Profile
 
         CreateMap<CustomerWithNavigationProperties, CustomerWithNavigationPropertiesDto>();
         CreateMap<Order, LookupDto<Guid?>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Item));
+
+        CreateMap<Hobby, HobbyDto>();
+        CreateMap<Hobby, HobbyExcelDto>();
     }
 }

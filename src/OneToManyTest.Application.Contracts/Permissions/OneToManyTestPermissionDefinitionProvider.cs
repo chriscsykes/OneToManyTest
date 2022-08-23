@@ -26,6 +26,11 @@ public class OneToManyTestPermissionDefinitionProvider : PermissionDefinitionPro
         orderPermission.AddChild(OneToManyTestPermissions.Orders.Create, L("Permission:Create"));
         orderPermission.AddChild(OneToManyTestPermissions.Orders.Edit, L("Permission:Edit"));
         orderPermission.AddChild(OneToManyTestPermissions.Orders.Delete, L("Permission:Delete"));
+
+        var hobbyPermission = myGroup.AddPermission(OneToManyTestPermissions.Hobbies.Default, L("Permission:Hobbies"));
+        hobbyPermission.AddChild(OneToManyTestPermissions.Hobbies.Create, L("Permission:Create"));
+        hobbyPermission.AddChild(OneToManyTestPermissions.Hobbies.Edit, L("Permission:Edit"));
+        hobbyPermission.AddChild(OneToManyTestPermissions.Hobbies.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)

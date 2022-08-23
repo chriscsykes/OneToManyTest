@@ -1,3 +1,4 @@
+using OneToManyTest.Hobbies;
 using OneToManyTest.Orders;
 using Volo.Abp.AutoMapper;
 using OneToManyTest.Customers;
@@ -14,5 +15,7 @@ public class OneToManyTestBlazorAutoMapperProfile : Profile
         CreateMap<CustomerDto, CustomerUpdateDto>();
 
         CreateMap<OrderDto, OrderUpdateDto>();
+
+        CreateMap<HobbyDto, HobbyUpdateDto>();
     }
 }
