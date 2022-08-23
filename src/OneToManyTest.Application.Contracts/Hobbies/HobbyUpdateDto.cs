@@ -10,6 +10,7 @@ namespace OneToManyTest.Hobbies
         [Required]
         public string Name { get; set; }
         public int YearsPerformed { get; set; }
+        public List<Guid> CustomerIds { get; set; }
 
         public string ConcurrencyStamp { get; set; }
     }

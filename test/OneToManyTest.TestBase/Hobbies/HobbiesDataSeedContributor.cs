@@ -29,16 +29,16 @@ namespace OneToManyTest.Hobbies
 
             await _hobbyRepository.InsertAsync(new Hobby
             (
-                id: Guid.Parse("7d2d2416-a28f-46a8-a8ac-28c80cdc6b4f"),
-                name: "085570fe9eb64026a67706624afca7e5ec77be6301ac4ae9b173089b3ba1c1b12b852babe4814ef1b1098fa43",
-                yearsPerformed: 1150191496
+                id: Guid.Parse("6bc8cd04-9f8c-49a8-ab0a-27caf3470562"),
+                name: "609d3f9e8ad441de9413d94d4e923a475fba0eaba70b4251aae2cf4d0ad61fd5d998028e665445fbb8417342ed0c",
+                yearsPerformed: 225927928
             ));
 
             await _hobbyRepository.InsertAsync(new Hobby
             (
-                id: Guid.Parse("7e619d44-a888-4d17-9478-582f85be0de7"),
-                name: "4fcd00be811041919dca6e5d21d8c3c0216715ba3c464bb599065a5e91b256dbfc9cdcad310941",
-                yearsPerformed: 1548517395
+                id: Guid.Parse("10895da3-80c8-4bd8-945c-c236793f8c19"),
+                name: "fa31da7a653",
+                yearsPerformed: 1576983372
             ));
 
             await _unitOfWorkManager.Current.SaveChangesAsync();

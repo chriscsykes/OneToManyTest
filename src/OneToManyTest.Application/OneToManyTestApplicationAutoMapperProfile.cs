@@ -27,5 +27,8 @@ public class OneToManyTestApplicationAutoMapperProfile : Profile
 
         CreateMap<Hobby, HobbyDto>();
         CreateMap<Hobby, HobbyExcelDto>();
+
+        CreateMap<HobbyWithNavigationProperties, HobbyWithNavigationPropertiesDto>();
+        CreateMap<Customer, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Email));
     }
 }

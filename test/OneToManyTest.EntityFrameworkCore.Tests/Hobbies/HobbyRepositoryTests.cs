@@ -25,13 +25,13 @@ namespace OneToManyTest.Hobbies
             {
                 // Act
                 var result = await _hobbyRepository.GetListAsync(
-                    name: "085570fe9eb64026a67706624afca7e5ec77be6301ac4ae9b173089b3ba1c1b12b852babe4814ef1b1098fa43"
+                    name: "609d3f9e8ad441de9413d94d4e923a475fba0eaba70b4251aae2cf4d0ad61fd5d998028e665445fbb8417342ed0c"
                 );
 
                 // Assert
                 result.Count.ShouldBe(1);
                 result.FirstOrDefault().ShouldNotBe(null);
-                result.First().Id.ShouldBe(Guid.Parse("7d2d2416-a28f-46a8-a8ac-28c80cdc6b4f"));
+                result.First().Id.ShouldBe(Guid.Parse("6bc8cd04-9f8c-49a8-ab0a-27caf3470562"));
             });
         }
 
@@ -43,7 +43,7 @@ namespace OneToManyTest.Hobbies
             {
                 // Act
                 var result = await _hobbyRepository.GetCountAsync(
-                    name: "4fcd00be811041919dca6e5d21d8c3c0216715ba3c464bb599065a5e91b256dbfc9cdcad310941"
+                    name: "fa31da7a653"
                 );
 
                 // Assert

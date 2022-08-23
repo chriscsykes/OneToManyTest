@@ -17,5 +17,7 @@ public class OneToManyTestBlazorAutoMapperProfile : Profile
         CreateMap<OrderDto, OrderUpdateDto>();
 
         CreateMap<HobbyDto, HobbyUpdateDto>();
+
+        CreateMap<HobbyDto, HobbyUpdateDto>().Ignore(x => x.CustomerIds);
     }
 }

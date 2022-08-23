@@ -18,7 +18,7 @@ namespace OneToManyTest.Blazor.Pages
     {
         protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = new List<Volo.Abp.BlazoriseUI.BreadcrumbItem>();
         protected PageToolbar Toolbar {get;} = new PageToolbar();
-        private IReadOnlyList<HobbyDto> HobbyList { get; set; }
+        private IReadOnlyList<HobbyWithNavigationPropertiesDto> HobbyList { get; set; }
         private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
         private int CurrentPage { get; set; } = 1;
         private string CurrentSorting { get; set; }
@@ -34,10 +34,16 @@ namespace OneToManyTest.Blazor.Pages
         private Modal CreateHobbyModal { get; set; }
         private Modal EditHobbyModal { get; set; }
         private GetHobbiesInput Filter { get; set; }
-        private DataGridEntityActionsColumn<HobbyDto> EntityActionsColumn { get; set; }
+        private DataGridEntityActionsColumn<HobbyWithNavigationPropertiesDto> EntityActionsColumn { get; set; }
         protected string SelectedCreateTab = "hobby-create-tab";
         protected string SelectedEditTab = "hobby-edit-tab";
+        private IReadOnlyList<LookupDto<Guid>> Customers { get; set; } = new List<LookupDto<Guid>>();
         
+        private string SelectedCustomerId { get; set; }
+        
+        private string SelectedCustomerText { get; set; }
+
+        private List<LookupDto<Guid>> SelectedCustomers { get; set; } = new List<LookupDto<Guid>>();
         public Hobbies()
         {
             NewHobby = new HobbyCreateDto();
@@ -109,7 +115,7 @@ namespace OneToManyTest.Blazor.Pages
             NavigationManager.NavigateTo($"/api/app/hobbies/as-excel-file?DownloadToken={token}", forceLoad: true);
         }
 
-        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<HobbyDto> e)
+        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<HobbyWithNavigationPropertiesDto> e)
         {
             CurrentSorting = e.Columns
                 .Where(c => c.SortDirection != SortDirection.Default)
@@ -122,6 +128,9 @@ namespace OneToManyTest.Blazor.Pages
 
         private async Task OpenCreateHobbyModalAsync()
         {
+            SelectedCustomers = new List<LookupDto<Guid>>();
+            
+
             NewHobby = new HobbyCreateDto{
                 
                 
@@ -139,19 +148,21 @@ namespace OneToManyTest.Blazor.Pages
             await CreateHobbyModal.Hide();
         }
 
-        private async Task OpenEditHobbyModalAsync(HobbyDto input)
+        private async Task OpenEditHobbyModalAsync(HobbyWithNavigationPropertiesDto input)
         {
-            var hobby = await HobbiesAppService.GetAsync(input.Id);
+            var hobby = await HobbiesAppService.GetWithNavigationPropertiesAsync(input.Hobby.Id);
             
-            EditingHobbyId = hobby.Id;
-            EditingHobby = ObjectMapper.Map<HobbyDto, HobbyUpdateDto>(hobby);
+            EditingHobbyId = hobby.Hobby.Id;
+            EditingHobby = ObjectMapper.Map<HobbyDto, HobbyUpdateDto>(hobby.Hobby);
+            SelectedCustomers = hobby.Customers.Select(a => new LookupDto<Guid>{ Id = a.Id, DisplayName = a.Email}).ToList();
+
             await EditingHobbyValidations.ClearAll();
             await EditHobbyModal.Show();
         }
 
-        private async Task DeleteHobbyAsync(HobbyDto input)
+        private async Task DeleteHobbyAsync(HobbyWithNavigationPropertiesDto input)
         {
-            await HobbiesAppService.DeleteAsync(input.Id);
+            await HobbiesAppService.DeleteAsync(input.Hobby.Id);
             await GetHobbiesAsync();
         }
 
@@ -163,6 +174,8 @@ namespace OneToManyTest.Blazor.Pages
                 {
                     return;
                 }
+                NewHobby.CustomerIds = SelectedCustomers.Select(x => x.Id).ToList();
+
 
                 await HobbiesAppService.CreateAsync(NewHobby);
                 await GetHobbiesAsync();
@@ -187,6 +200,8 @@ namespace OneToManyTest.Blazor.Pages
                 {
                     return;
                 }
+                EditingHobby.CustomerIds = SelectedCustomers.Select(x => x.Id).ToList();
+
 
                 await HobbiesAppService.UpdateAsync(EditingHobbyId, EditingHobby);
                 await GetHobbiesAsync();
@@ -208,6 +223,31 @@ namespace OneToManyTest.Blazor.Pages
             SelectedEditTab = name;
         }
         
+
+        private async Task GetCustomerLookupAsync(string newValue = null)
+        {
+            Customers = (await HobbiesAppService.GetCustomerLookupAsync(new LookupRequestDto { Filter = newValue })).Items;
+        }
+
+        private void AddCustomer()
+        {
+            if (SelectedCustomerId.IsNullOrEmpty())
+            {
+                return;
+            }
+            
+            if (SelectedCustomers.Any(p => p.Id.ToString() == SelectedCustomerId))
+            {
+                UiMessageService.Warn(L["ItemAlreadyAdded"]);
+                return;
+            }
+
+            SelectedCustomers.Add(new LookupDto<Guid>
+            {
+                Id = Guid.Parse(SelectedCustomerId),
+                DisplayName = SelectedCustomerText
+            });
+        }
 
     }
 }

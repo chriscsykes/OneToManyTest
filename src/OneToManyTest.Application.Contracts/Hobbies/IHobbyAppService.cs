@@ -1,3 +1,4 @@
+using OneToManyTest.Shared;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -9,9 +10,13 @@ namespace OneToManyTest.Hobbies
 {
     public interface IHobbiesAppService : IApplicationService
     {
-        Task<PagedResultDto<HobbyDto>> GetListAsync(GetHobbiesInput input);
+        Task<PagedResultDto<HobbyWithNavigationPropertiesDto>> GetListAsync(GetHobbiesInput input);
+
+        Task<HobbyWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id);
 
         Task<HobbyDto> GetAsync(Guid id);
+
+        Task<PagedResultDto<LookupDto<Guid>>> GetCustomerLookupAsync(LookupRequestDto input);
 
         Task DeleteAsync(Guid id);
 

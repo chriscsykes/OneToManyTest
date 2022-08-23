@@ -142,14 +142,39 @@ public class OneToManyTestDbContext :
         }
         if (builder.IsHostDatabase())
         {
+
+        }
+        if (builder.IsHostDatabase())
+        {
+
+        }
+        if (builder.IsHostDatabase())
+        {
             builder.Entity<Hobby>(b =>
 {
     b.ToTable(OneToManyTestConsts.DbTablePrefix + "Hobbies", OneToManyTestConsts.DbSchema);
     b.ConfigureByConvention();
     b.Property(x => x.Name).HasColumnName(nameof(Hobby.Name)).IsRequired();
     b.Property(x => x.YearsPerformed).HasColumnName(nameof(Hobby.YearsPerformed));
+    b.HasMany(x => x.Customers).WithOne().HasForeignKey(x => x.HobbyId).IsRequired().OnDelete(DeleteBehavior.NoAction);
 });
 
+            builder.Entity<HobbyCustomer>(b =>
+{
+b.ToTable(OneToManyTestConsts.DbTablePrefix + "HobbyCustomer" + OneToManyTestConsts.DbSchema);
+b.ConfigureByConvention();
+
+b.HasKey(
+    x => new { x.HobbyId, x.CustomerId }
+);
+
+b.HasOne<Hobby>().WithMany(x => x.Customers).HasForeignKey(x => x.HobbyId).IsRequired().OnDelete(DeleteBehavior.NoAction);
+b.HasOne<Customer>().WithMany().HasForeignKey(x => x.CustomerId).IsRequired().OnDelete(DeleteBehavior.NoAction);
+
+b.HasIndex(
+        x => new { x.HobbyId, x.CustomerId }
+);
+});
         }
     }
 }

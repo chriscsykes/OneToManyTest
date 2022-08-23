@@ -53,7 +53,7 @@
 @* ************************* DATA GRID ************************* *@
 <Card>
     <CardBody>
-        <DataGrid TItem="HobbyDto"
+        <DataGrid TItem="HobbyWithNavigationPropertiesDto"
                   Data="HobbyList"
                   ReadData="OnDataGridReadAsync"
                   TotalItems="TotalCount"
@@ -61,14 +61,14 @@
                   Responsive="true"
                   PageSize="PageSize">
             <DataGridColumns>
-                <DataGridEntityActionsColumn TItem="HobbyDto" @ref="@EntityActionsColumn">
+                <DataGridEntityActionsColumn TItem="HobbyWithNavigationPropertiesDto" @ref="@EntityActionsColumn">
                     <DisplayTemplate>
-                        <EntityActions TItem="HobbyDto" EntityActionsColumn="@EntityActionsColumn">
-                            <EntityAction TItem="HobbyDto"
+                        <EntityActions TItem="HobbyWithNavigationPropertiesDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="HobbyWithNavigationPropertiesDto"
                                           Visible="@CanEditHobby"
                                           Clicked="async () => await OpenEditHobbyModalAsync(context)"
                                           Text="@L["Edit"]"></EntityAction>
-                            <EntityAction TItem="HobbyDto"
+                            <EntityAction TItem="HobbyWithNavigationPropertiesDto"
                                           Visible="@CanDeleteHobby"
                                           Clicked="() => DeleteHobbyAsync(context)"
                                           ConfirmationMessage="@(()=> L["DeleteConfirmationMessage"])"
@@ -77,13 +77,13 @@
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
                
-              <DataGridColumn TItem="HobbyDto"
-                      Field="Name"
+              <DataGridColumn TItem="HobbyWithNavigationPropertiesDto"
+                      Field="Hobby.Name"
                       Caption="@L["Name"]">
               </DataGridColumn>
 
-              <DataGridColumn TItem="HobbyDto"
-                      Field="YearsPerformed"
+              <DataGridColumn TItem="HobbyWithNavigationPropertiesDto"
+                      Field="Hobby.YearsPerformed"
                       Caption="@L["YearsPerformed"]">
               </DataGridColumn>
 
@@ -101,11 +101,17 @@
                 <CloseButton Clicked="CloseCreateHobbyModalAsync" />
             </ModalHeader>
             <ModalBody>
+                <Tabs SelectedTab="@SelectedCreateTab" SelectedTabChanged="@OnSelectedCreateTabChanged">
+                    <Items>
+                        <Tab Name="hobby-create-tab">@L["Hobby"].Value</Tab> 
+                        <Tab Name="customers-create-tab">@L["Customers"].Value</Tab>
+                    </Items>
+                    <Content>
                 <Validations @ref="@NewHobbyValidations"
                             Mode="ValidationMode.Auto"
                             Model="@NewHobby"
                             ValidateOnLoad="false">
-                     
+                     <TabPanel Name="hobby-create-tab">
                     
                     <Validation>
                         <Field>
@@ -131,9 +137,57 @@
                      </Validation>
 
 
-                    
-                    
+                    </TabPanel>
+                                                <TabPanel Name="customers-create-tab">
+
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is9">
+                                        <Field>
+
+                                            <Autocomplete Data="@Customers"
+                                                          TItem="LookupDto<Guid>"
+                                                          TValue="string"
+                                                          TextField="@((item) => item.DisplayName)"
+                                                          ValueField="@((item) => item.Id.ToString())"
+                                                          SearchChanged="@GetCustomerLookupAsync"
+                                                          @bind-SelectedValue="@SelectedCustomerId"
+                                                          @bind-SelectedText="@SelectedCustomerText"
+                                                          Placeholder="&#8212;"/>
+                                        </Field>
+                                    </Column>
+
+                                    <Column ColumnSize="ColumnSize.Is3">
+                                        <Button Color="Color.Info" TextColor="TextColor.White" Size="Size.Small" Clicked="AddCustomer">
+                                            <Icon class="fa fa-plus"></Icon> @L["Add"]
+                                        </Button>
+                                    </Column>
+                                </Row>
+                                @if (SelectedCustomers.Any())
+                                {
+                                    <Table striped-rows="true" responsive-sm="true" class="mt-2">
+                                        <TableHeader>
+                                            <TableHeaderCell><Span class="float-start">@L["Email"]</Span></TableHeaderCell>
+                                        </TableHeader>
+                                        <TableBody>
+                                            @foreach (var customer in SelectedCustomers)
+                                            {
+                                                <TableRow>
+                                                    <TableRowCell><Span class="float-start">@customer.DisplayName</Span></TableRowCell>
+                                                    <TableRowCell>
+                                                        <span class="btn btn-danger btn-sm float-end"
+                                                              @onclick="() => SelectedCustomers.RemoveAll(s => s.Id == customer.Id)">
+                                                            <Icon Class="fa fa-trash"></Icon>
+                                                        </span>
+                                                    </TableRowCell>
+                                                </TableRow>
+                                            }
+                                        </TableBody>
+                                    </Table>
+                                }
+                            </TabPanel>
                 </Validations>
+                    </Content>
+                </Tabs>
             </ModalBody>
             <ModalFooter>
                 <Button Color="Color.Secondary"
@@ -155,11 +209,18 @@
                 <CloseButton Clicked="CloseEditHobbyModalAsync" />
             </ModalHeader>
             <ModalBody>
+                <Tabs SelectedTab="@SelectedEditTab" SelectedTabChanged="@OnSelectedEditTabChanged">
+                    <Items>
+                        <Tab Name="hobby-edit-tab">@L["Hobby"].Value</Tab>
+                        
+                        <Tab Name="customers-edit-tab">@L["Customers"].Value</Tab>
+                    </Items>
+                    <Content>
                 <Validations @ref="@EditingHobbyValidations"
                             Mode="ValidationMode.Auto"
                             Model="@EditingHobby"
                             ValidateOnLoad="false">
-                     
+                     <TabPanel Name="hobby-edit-tab">
                     
                     <Validation>
                         <Field>
@@ -185,9 +246,57 @@
                      </Validation>
 
 
-                    
-                    
+                    </TabPanel>
+                                                <TabPanel Name="customers-edit-tab">
+
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is9">
+                                        <Field>
+
+                                            <Autocomplete Data="@Customers"
+                                                          TItem="LookupDto<Guid>"
+                                                          TValue="string"
+                                                          TextField="@((item) => item.DisplayName)"
+                                                          ValueField="@((item) => item.Id.ToString())"
+                                                          SearchChanged="@GetCustomerLookupAsync"
+                                                          @bind-SelectedValue="@SelectedCustomerId"
+                                                          @bind-SelectedText="@SelectedCustomerText"
+                                                          Placeholder="&#8212;"/>
+                                        </Field>
+                                    </Column>
+
+                                    <Column ColumnSize="ColumnSize.Is3">
+                                        <Button Color="Color.Info" TextColor="TextColor.White" Size="Size.Small" Clicked="AddCustomer">
+                                            <Icon class="fa fa-plus"></Icon> @L["Add"]
+                                        </Button>
+                                    </Column>
+                                </Row>
+                                @if (SelectedCustomers.Any())
+                                {
+                                    <Table striped-rows="true" responsive-sm="true" class="mt-2">
+                                        <TableHeader>
+                                            <TableHeaderCell><Span class="float-start">@L["Email"]</Span></TableHeaderCell>
+                                        </TableHeader>
+                                        <TableBody>
+                                            @foreach (var customer in SelectedCustomers)
+                                            {
+                                                <TableRow>
+                                                    <TableRowCell><Span class="float-start">@customer.DisplayName</Span></TableRowCell>
+                                                    <TableRowCell>
+                                                        <span class="btn btn-danger btn-sm float-end"
+                                                              @onclick="() => SelectedCustomers.RemoveAll(s => s.Id == customer.Id)">
+                                                            <Icon Class="fa fa-trash"></Icon>
+                                                        </span>
+                                                    </TableRowCell>
+                                                </TableRow>
+                                            }
+                                        </TableBody>
+                                    </Table>
+                                }
+                            </TabPanel>
                 </Validations>
+                    </Content>
+                </Tabs>
             </ModalBody>
             <ModalFooter>
                 <Button Color="Color.Secondary"

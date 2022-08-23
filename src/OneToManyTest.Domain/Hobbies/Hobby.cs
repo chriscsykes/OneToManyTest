@@ -18,6 +18,8 @@ namespace OneToManyTest.Hobbies
 
         public virtual int YearsPerformed { get; set; }
 
+        public ICollection<HobbyCustomer> Customers { get; private set; }
+
         public Hobby()
         {
 
@@ -30,7 +32,47 @@ namespace OneToManyTest.Hobbies
             Check.NotNull(name, nameof(name));
             Name = name;
             YearsPerformed = yearsPerformed;
+            Customers = new Collection<HobbyCustomer>();
+        }
+        public void AddCustomer(Guid customerId)
+        {
+            Check.NotNull(customerId, nameof(customerId));
+
+            if (IsInCustomers(customerId))
+            {
+                return;
+            }
+
+            Customers.Add(new HobbyCustomer(Id, customerId));
         }
 
+        public void RemoveCustomer(Guid customerId)
+        {
+            Check.NotNull(customerId, nameof(customerId));
+
+            if (!IsInCustomers(customerId))
+            {
+                return;
+            }
+
+            Customers.RemoveAll(x => x.CustomerId == customerId);
+        }
+
+        public void RemoveAllCustomersExceptGivenIds(List<Guid> customerIds)
+        {
+            Check.NotNullOrEmpty(customerIds, nameof(customerIds));
+
+            Customers.RemoveAll(x => !customerIds.Contains(x.CustomerId));
+        }
+
+        public void RemoveAllCustomers()
+        {
+            Customers.RemoveAll(x => x.HobbyId == Id);
+        }
+
+        private bool IsInCustomers(Guid customerId)
+        {
+            return Customers.Any(x => x.CustomerId == customerId);
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace OneToManyTest.Hobbies
         [Required]
         public string Name { get; set; }
         public int YearsPerformed { get; set; } = 1;
+        public List<Guid> CustomerIds { get; set; }
     }
 }

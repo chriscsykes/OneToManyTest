@@ -63,6 +63,17 @@
     }
   ],
   "NavigationProperties": [],
-  "NavigationConnections": [],
+  "NavigationConnections": [
+    {
+      "Name": "Customers",
+      "DisplayProperty": "Email",
+      "Namespace": "OneToManyTest.Customers",
+      "EntityName": "Customer",
+      "EntitySetName": "Customers",
+      "DtoNamespace": "OneToManyTest.Customers",
+      "DtoEntityName": "CustomerDto",
+      "Type": "Guid"
+    }
+  ],
   "PhysicalFileName": "Hobby.json"
 }

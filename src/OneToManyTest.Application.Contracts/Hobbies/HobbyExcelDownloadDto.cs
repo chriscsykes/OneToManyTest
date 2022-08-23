@@ -12,6 +12,7 @@ namespace OneToManyTest.Hobbies
         public string Name { get; set; }
         public int? YearsPerformedMin { get; set; }
         public int? YearsPerformedMax { get; set; }
+        public Guid? CustomerId { get; set; }
 
         public HobbyExcelDownloadDto()
         {

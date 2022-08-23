@@ -1,3 +1,5 @@
+using OneToManyTest.Shared;
+using OneToManyTest.Customers;
 using System;
 using System.IO;
 using System.Linq;
@@ -27,29 +29,52 @@ namespace OneToManyTest.Hobbies
         private readonly IDistributedCache<HobbyExcelDownloadTokenCacheItem, string> _excelDownloadTokenCache;
         private readonly IHobbyRepository _hobbyRepository;
         private readonly HobbyManager _hobbyManager;
+        private readonly IRepository<Customer, Guid> _customerRepository;
 
-        public HobbiesAppService(IHobbyRepository hobbyRepository, HobbyManager hobbyManager, IDistributedCache<HobbyExcelDownloadTokenCacheItem, string> excelDownloadTokenCache)
+        public HobbiesAppService(IHobbyRepository hobbyRepository, HobbyManager hobbyManager, IDistributedCache<HobbyExcelDownloadTokenCacheItem, string> excelDownloadTokenCache, IRepository<Customer, Guid> customerRepository)
         {
             _excelDownloadTokenCache = excelDownloadTokenCache;
             _hobbyRepository = hobbyRepository;
-            _hobbyManager = hobbyManager;
+            _hobbyManager = hobbyManager; _customerRepository = customerRepository;
         }
 
-        public virtual async Task<PagedResultDto<HobbyDto>> GetListAsync(GetHobbiesInput input)
+        public virtual async Task<PagedResultDto<HobbyWithNavigationPropertiesDto>> GetListAsync(GetHobbiesInput input)
         {
-            var totalCount = await _hobbyRepository.GetCountAsync(input.FilterText, input.Name, input.YearsPerformedMin, input.YearsPerformedMax);
-            var items = await _hobbyRepository.GetListAsync(input.FilterText, input.Name, input.YearsPerformedMin, input.YearsPerformedMax, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var totalCount = await _hobbyRepository.GetCountAsync(input.FilterText, input.Name, input.YearsPerformedMin, input.YearsPerformedMax, input.CustomerId);
+            var items = await _hobbyRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.Name, input.YearsPerformedMin, input.YearsPerformedMax, input.CustomerId, input.Sorting, input.MaxResultCount, input.SkipCount);
 
-            return new PagedResultDto<HobbyDto>
+            return new PagedResultDto<HobbyWithNavigationPropertiesDto>
             {
                 TotalCount = totalCount,
-                Items = ObjectMapper.Map<List<Hobby>, List<HobbyDto>>(items)
+                Items = ObjectMapper.Map<List<HobbyWithNavigationProperties>, List<HobbyWithNavigationPropertiesDto>>(items)
             };
+        }
+
+        public virtual async Task<HobbyWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
+        {
+            return ObjectMapper.Map<HobbyWithNavigationProperties, HobbyWithNavigationPropertiesDto>
+                (await _hobbyRepository.GetWithNavigationPropertiesAsync(id));
         }
 
         public virtual async Task<HobbyDto> GetAsync(Guid id)
         {
             return ObjectMapper.Map<Hobby, HobbyDto>(await _hobbyRepository.GetAsync(id));
+        }
+
+        public virtual async Task<PagedResultDto<LookupDto<Guid>>> GetCustomerLookupAsync(LookupRequestDto input)
+        {
+            var query = (await _customerRepository.GetQueryableAsync())
+                .WhereIf(!string.IsNullOrWhiteSpace(input.Filter),
+                    x => x.Email != null &&
+                         x.Email.Contains(input.Filter));
+
+            var lookupData = await query.PageBy(input.SkipCount, input.MaxResultCount).ToDynamicListAsync<Customer>();
+            var totalCount = query.Count();
+            return new PagedResultDto<LookupDto<Guid>>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<Customer>, List<LookupDto<Guid>>>(lookupData)
+            };
         }
 
         [Authorize(OneToManyTestPermissions.Hobbies.Delete)]
@@ -63,7 +88,7 @@ namespace OneToManyTest.Hobbies
         {
 
             var hobby = await _hobbyManager.CreateAsync(
-            input.Name, input.YearsPerformed
+            input.CustomerIds, input.Name, input.YearsPerformed
             );
 
             return ObjectMapper.Map<Hobby, HobbyDto>(hobby);
@@ -75,7 +100,7 @@ namespace OneToManyTest.Hobbies
 
             var hobby = await _hobbyManager.UpdateAsync(
             id,
-            input.Name, input.YearsPerformed, input.ConcurrencyStamp
+            input.CustomerIds, input.Name, input.YearsPerformed, input.ConcurrencyStamp
             );
 
             return ObjectMapper.Map<Hobby, HobbyDto>(hobby);
