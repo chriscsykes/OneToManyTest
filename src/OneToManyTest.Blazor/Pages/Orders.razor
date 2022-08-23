@@ -1,0 +1,230 @@
+@page "/orders"
+@attribute [Authorize(OneToManyTestPermissions.Orders.Default)]
+@using OneToManyTest.Orders
+@using OneToManyTest.Localization
+@using OneToManyTest.Shared
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components.Web
+@using Blazorise
+@using Blazorise.Components
+@using Blazorise.DataGrid
+@using Volo.Abp.BlazoriseUI
+@using Volo.Abp.BlazoriseUI.Components
+@using Volo.Abp.ObjectMapping
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using OneToManyTest.Permissions
+@using Microsoft.AspNetCore.Components
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Http.Client
+@inherits OneToManyTestComponentBase
+@inject IOrdersAppService OrdersAppService
+@inject IUiMessageService UiMessageService
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+@* ************************* PAGE HEADER ************************* *@
+<PageHeader Title="@L["Orders"]" BreadcrumbItems="BreadcrumbItems" Toolbar="Toolbar">
+
+</PageHeader>
+
+@* ************************* SEARCH ************************* *@
+<Card>
+    <CardBody>
+        <Form id="OrderSearchForm" class="mb-3">
+            <Addons>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit @bind-Text="@Filter.FilterText"
+                              Autofocus="true"
+                              Placeholder="@L["Search"]">
+                    </TextEdit>
+                </Addon>
+                <Addon AddonType="AddonType.End">
+                    <SubmitButton Form="OrderSearchForm" Clicked="GetOrdersAsync">
+                        <Icon Name="IconName.Search" Class="me-1"></Icon>@L["Search"]
+                    </SubmitButton>
+                </Addon>
+            </Addons>
+        </Form>
+    </CardBody>
+</Card>
+
+@* ************************* DATA GRID ************************* *@
+<Card>
+    <CardBody>
+        <DataGrid TItem="OrderDto"
+                  Data="OrderList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  Responsive="true"
+                  PageSize="PageSize">
+            <DataGridColumns>
+                <DataGridEntityActionsColumn TItem="OrderDto" @ref="@EntityActionsColumn">
+                    <DisplayTemplate>
+                        <EntityActions TItem="OrderDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="OrderDto"
+                                          Visible="@CanEditOrder"
+                                          Clicked="async () => await OpenEditOrderModalAsync(context)"
+                                          Text="@L["Edit"]"></EntityAction>
+                            <EntityAction TItem="OrderDto"
+                                          Visible="@CanDeleteOrder"
+                                          Clicked="() => DeleteOrderAsync(context)"
+                                          ConfirmationMessage="@(()=> L["DeleteConfirmationMessage"])"
+                                          Text="@L["Delete"]"></EntityAction>
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridEntityActionsColumn>
+               
+              <DataGridColumn TItem="OrderDto"
+                      Field="Item"
+                      Caption="@L["Item"]">
+              </DataGridColumn>
+
+              <DataGridColumn TItem="OrderDto"
+                      Field="Quantity"
+                      Caption="@L["Quantity"]">
+              </DataGridColumn>
+
+              <DataGridColumn TItem="OrderDto"
+                      Field="Price"
+                      Caption="@L["Price"]">
+              </DataGridColumn>
+
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+@* ************************* CREATE MODAL ************************* *@
+<Modal @ref="CreateOrderModal" Closing="@CreateOrderModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered="true">
+        <Form id="CreateOrderForm">
+            <ModalHeader>
+                <ModalTitle>@L["NewOrder"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateOrderModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@NewOrderValidations"
+                            Mode="ValidationMode.Auto"
+                            Model="@NewOrder"
+                            ValidateOnLoad="false">
+                     
+                    
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Item"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewOrder.Item" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Quantity"]</FieldLabel>
+                            <NumericPicker TValue="int" @bind-Value="@NewOrder.Quantity"  Decimals="0">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                             </NumericPicker>
+                        </Field>
+                     </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Price"]</FieldLabel>
+                            <NumericPicker TValue="decimal" @bind-Value="@NewOrder.Price"  Decimals="0">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                             </NumericPicker>
+                        </Field>
+                     </Validation>
+
+
+                    
+                    
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateOrderModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateOrderForm" Clicked="CreateOrderAsync" />
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@* ************************* EDIT MODAL ************************* *@
+<Modal @ref="EditOrderModal" Closing="@EditOrderModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered="true">
+        <Form id="EditOrderForm">
+            <ModalHeader>
+                <ModalTitle>@L["Update"]</ModalTitle>
+                <CloseButton Clicked="CloseEditOrderModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@EditingOrderValidations"
+                            Mode="ValidationMode.Auto"
+                            Model="@EditingOrder"
+                            ValidateOnLoad="false">
+                     
+                    
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Item"] *</FieldLabel>
+                            <TextEdit @bind-Text="@EditingOrder.Item" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Quantity"]</FieldLabel>
+                            <NumericPicker TValue="int" @bind-Value="@EditingOrder.Quantity"  Decimals="0">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                             </NumericPicker>
+                        </Field>
+                     </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Price"]</FieldLabel>
+                            <NumericPicker TValue="decimal" @bind-Value="@EditingOrder.Price"  Decimals="0">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                             </NumericPicker>
+                        </Field>
+                     </Validation>
+
+
+                    
+                    
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseEditOrderModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateOrderForm" Clicked="UpdateOrderAsync" />
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>

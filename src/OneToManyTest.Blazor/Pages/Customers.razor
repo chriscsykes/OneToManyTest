@@ -1,0 +1,263 @@
+@page "/customers"
+@attribute [Authorize(OneToManyTestPermissions.Customers.Default)]
+@using OneToManyTest.Customers
+@using OneToManyTest.Localization
+@using OneToManyTest.Shared
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components.Web
+@using Blazorise
+@using Blazorise.Components
+@using Blazorise.DataGrid
+@using Volo.Abp.BlazoriseUI
+@using Volo.Abp.BlazoriseUI.Components
+@using Volo.Abp.ObjectMapping
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using OneToManyTest.Permissions
+@using Microsoft.AspNetCore.Components
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Http.Client
+@inherits OneToManyTestComponentBase
+@inject ICustomersAppService CustomersAppService
+@inject IUiMessageService UiMessageService
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+@* ************************* PAGE HEADER ************************* *@
+<PageHeader Title="@L["Customers"]" BreadcrumbItems="BreadcrumbItems" Toolbar="Toolbar">
+
+</PageHeader>
+
+@* ************************* SEARCH ************************* *@
+<Card>
+    <CardBody>
+        <Form id="CustomerSearchForm" class="mb-3">
+            <Addons>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit @bind-Text="@Filter.FilterText"
+                              Autofocus="true"
+                              Placeholder="@L["Search"]">
+                    </TextEdit>
+                </Addon>
+                <Addon AddonType="AddonType.End">
+                    <SubmitButton Form="CustomerSearchForm" Clicked="GetCustomersAsync">
+                        <Icon Name="IconName.Search" Class="me-1"></Icon>@L["Search"]
+                    </SubmitButton>
+                </Addon>
+            </Addons>
+        </Form>
+    </CardBody>
+</Card>
+
+@* ************************* DATA GRID ************************* *@
+<Card>
+    <CardBody>
+        <DataGrid TItem="CustomerWithNavigationPropertiesDto"
+                  Data="CustomerList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  Responsive="true"
+                  PageSize="PageSize">
+            <DataGridColumns>
+                <DataGridEntityActionsColumn TItem="CustomerWithNavigationPropertiesDto" @ref="@EntityActionsColumn">
+                    <DisplayTemplate>
+                        <EntityActions TItem="CustomerWithNavigationPropertiesDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="CustomerWithNavigationPropertiesDto"
+                                          Visible="@CanEditCustomer"
+                                          Clicked="async () => await OpenEditCustomerModalAsync(context)"
+                                          Text="@L["Edit"]"></EntityAction>
+                            <EntityAction TItem="CustomerWithNavigationPropertiesDto"
+                                          Visible="@CanDeleteCustomer"
+                                          Clicked="() => DeleteCustomerAsync(context)"
+                                          ConfirmationMessage="@(()=> L["DeleteConfirmationMessage"])"
+                                          Text="@L["Delete"]"></EntityAction>
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridEntityActionsColumn>
+               
+              <DataGridColumn TItem="CustomerWithNavigationPropertiesDto"
+                      Field="Customer.FirstName"
+                      Caption="@L["FirstName"]">
+              </DataGridColumn>
+
+              <DataGridColumn TItem="CustomerWithNavigationPropertiesDto"
+                      Field="Customer.LastName"
+                      Caption="@L["LastName"]">
+              </DataGridColumn>
+
+              <DataGridColumn TItem="CustomerWithNavigationPropertiesDto"
+                      Field="Customer.Email"
+                      Caption="@L["Email"]">
+              </DataGridColumn>
+
+              <DataGridColumn TItem="CustomerWithNavigationPropertiesDto"
+                      Field="Order.Item"
+                      Caption="@L["Order"]">
+              </DataGridColumn>
+
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+@* ************************* CREATE MODAL ************************* *@
+<Modal @ref="CreateCustomerModal" Closing="@CreateCustomerModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered="true">
+        <Form id="CreateCustomerForm">
+            <ModalHeader>
+                <ModalTitle>@L["NewCustomer"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateCustomerModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@NewCustomerValidations"
+                            Mode="ValidationMode.Auto"
+                            Model="@NewCustomer"
+                            ValidateOnLoad="false">
+                     
+                    
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["FirstName"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewCustomer.FirstName" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["LastName"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewCustomer.LastName" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Email"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewCustomer.Email" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Field>
+                        <FieldLabel>@L["Order"]</FieldLabel>
+                        <Select TValue="Guid?" @bind-SelectedValue="@NewCustomer.OrderId">
+                            <SelectItem TValue="Guid?" Value="null"></SelectItem>
+                            @foreach (var order in OrdersNullable)
+                            {
+                                <SelectItem TValue="Guid?" Value="@order.Id">
+                                    @order.DisplayName
+                                </SelectItem>
+                            }
+                        </Select>
+                    </Field>
+
+
+                    
+                    
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateCustomerModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateCustomerForm" Clicked="CreateCustomerAsync" />
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@* ************************* EDIT MODAL ************************* *@
+<Modal @ref="EditCustomerModal" Closing="@EditCustomerModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered="true">
+        <Form id="EditCustomerForm">
+            <ModalHeader>
+                <ModalTitle>@L["Update"]</ModalTitle>
+                <CloseButton Clicked="CloseEditCustomerModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@EditingCustomerValidations"
+                            Mode="ValidationMode.Auto"
+                            Model="@EditingCustomer"
+                            ValidateOnLoad="false">
+                     
+                    
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["FirstName"]</FieldLabel>
+                            <TextEdit @bind-Text="@EditingCustomer.FirstName" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["LastName"]</FieldLabel>
+                            <TextEdit @bind-Text="@EditingCustomer.LastName" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["Email"] *</FieldLabel>
+                            <TextEdit @bind-Text="@EditingCustomer.Email" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+
+                    <Field>
+                        <FieldLabel>@L["Order"]</FieldLabel>
+                        <Select TValue="Guid?" @bind-SelectedValue="@EditingCustomer.OrderId">
+                            <SelectItem TValue="Guid?" Value="null"></SelectItem>
+                            @foreach (var order in OrdersNullable)
+                            {
+                                <SelectItem TValue="Guid?" Value="@order.Id">
+                                    @order.DisplayName
+                                </SelectItem>
+                            }
+                        </Select>
+                    </Field>
+
+
+                    
+                    
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseEditCustomerModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateCustomerForm" Clicked="UpdateCustomerAsync" />
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
