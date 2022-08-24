@@ -17,6 +17,7 @@ using Volo.Abp.OpenIddict;
 using Volo.Abp.BlobStoring.Database;
 using Volo.Abp.Gdpr;
 using Volo.Abp.GlobalFeatures;
+using Volo.FileManagement;
 
 namespace OneToManyTest;
 
@@ -35,7 +36,8 @@ namespace OneToManyTest;
     typeof(AbpGlobalFeaturesModule),
     typeof(BlobStoringDatabaseDomainSharedModule)
     )]
-public class OneToManyTestDomainSharedModule : AbpModule
+[DependsOn(typeof(FileManagementDomainSharedModule))]
+    public class OneToManyTestDomainSharedModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

@@ -20,6 +20,7 @@ using Volo.Abp.Commercial.SuiteTemplates;
 using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.PermissionManagement.OpenIddict;
+using Volo.FileManagement;
 
 namespace OneToManyTest;
 
@@ -41,7 +42,8 @@ namespace OneToManyTest;
     typeof(AbpGdprDomainModule),
     typeof(BlobStoringDatabaseDomainModule)
     )]
-public class OneToManyTestDomainModule : AbpModule
+[DependsOn(typeof(FileManagementDomainModule))]
+    public class OneToManyTestDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

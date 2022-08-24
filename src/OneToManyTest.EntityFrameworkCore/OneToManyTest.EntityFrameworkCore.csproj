@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\common.props" />
 
@@ -8,20 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Volo.FileManagement.EntityFrameworkCore" Version="6.0.0-rc.3" />
     <ProjectReference Include="..\OneToManyTest.Domain\OneToManyTest.Domain.csproj" />
-    <PackageReference Include="Volo.Abp.EntityFrameworkCore.SqlServer" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.OpenIddict.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.BackgroundJobs.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.BlobStoring.Database.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Identity.Pro.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.LanguageManagement.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Saas.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.TextTemplateManagement.EntityFrameworkCore" Version="6.0.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Gdpr.EntityFrameworkCore" Version="6.0.0-rc.2" />
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore.SqlServer" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.OpenIddict.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.BlobStoring.Database.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.Identity.Pro.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.LanguageManagement.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Saas.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.TextTemplateManagement.EntityFrameworkCore" Version="6.0.0-rc.3" />
+    <PackageReference Include="Volo.Abp.Gdpr.EntityFrameworkCore" Version="6.0.0-rc.3" />
   </ItemGroup>
 
   <ItemGroup>

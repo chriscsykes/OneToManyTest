@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Account;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.FeatureManagement;
@@ -11,6 +11,8 @@ using Volo.Abp.SettingManagement;
 using Volo.Saas.Host;
 using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.Gdpr;
+using Volo.FileManagement;
+using Volo.Abp.OpenIddict;
 
 namespace OneToManyTest;
 
@@ -29,7 +31,8 @@ namespace OneToManyTest;
     typeof(AbpGdprHttpApiClientModule),
     typeof(TextTemplateManagementHttpApiClientModule)
 )]
-public class OneToManyTestHttpApiClientModule : AbpModule
+[DependsOn(typeof(FileManagementHttpApiClientModule))]
+    public class OneToManyTestHttpApiClientModule : AbpModule
 {
     public const string RemoteServiceName = "Default";
 
