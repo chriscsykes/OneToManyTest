@@ -1,4 +1,4 @@
-﻿using Localization.Resources.AbpUi;
+using Localization.Resources.AbpUi;
 using OneToManyTest.Localization;
 using Volo.Abp.Account;
 using Volo.Abp.AuditLogging;
@@ -13,6 +13,7 @@ using Volo.Abp.SettingManagement;
 using Volo.Abp.TextTemplateManagement;
 using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict;
+using Volo.FileManagement;
 
 namespace OneToManyTest;
 
@@ -31,7 +32,8 @@ namespace OneToManyTest;
     typeof(AbpAccountPublicHttpApiModule),
     typeof(TextTemplateManagementHttpApiModule)
     )]
-public class OneToManyTestHttpApiModule : AbpModule
+[DependsOn(typeof(FileManagementHttpApiModule))]
+    public class OneToManyTestHttpApiModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

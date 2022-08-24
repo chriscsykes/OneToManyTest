@@ -55,6 +55,7 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Saas.Host;
 using Volo.Saas.Host.Blazor;
 using Volo.Saas.Host.Blazor.Server;
+using Volo.FileManagement.Blazor.Server;
 
 namespace OneToManyTest.Blazor;
 
@@ -79,7 +80,8 @@ namespace OneToManyTest.Blazor;
     typeof(TextTemplateManagementBlazorServerModule),
     typeof(AbpGdprBlazorServerModule)
    )]
-public class OneToManyTestBlazorModule : AbpModule
+[DependsOn(typeof(FileManagementBlazorServerModule))]
+    public class OneToManyTestBlazorModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

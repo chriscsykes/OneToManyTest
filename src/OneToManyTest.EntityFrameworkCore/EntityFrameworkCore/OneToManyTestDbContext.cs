@@ -21,6 +21,7 @@ using Volo.Saas.Editions;
 using Volo.Saas.Tenants;
 using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
+using Volo.FileManagement.EntityFrameworkCore;
 
 namespace OneToManyTest.EntityFrameworkCore;
 
@@ -176,5 +177,6 @@ b.HasIndex(
 );
 });
         }
-    }
+        builder.ConfigureFileManagement();
+        }
 }

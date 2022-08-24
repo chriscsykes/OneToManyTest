@@ -18,6 +18,7 @@ using Volo.Saas.EntityFrameworkCore;
 using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
 using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
+using Volo.FileManagement.EntityFrameworkCore;
 
 namespace OneToManyTest.EntityFrameworkCore;
 
@@ -37,7 +38,8 @@ namespace OneToManyTest.EntityFrameworkCore;
     typeof(AbpGdprEntityFrameworkCoreModule),
     typeof(BlobStoringDatabaseEntityFrameworkCoreModule)
     )]
-public class OneToManyTestEntityFrameworkCoreModule : AbpModule
+[DependsOn(typeof(FileManagementEntityFrameworkCoreModule))]
+    public class OneToManyTestEntityFrameworkCoreModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

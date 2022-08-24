@@ -1,4 +1,4 @@
-﻿using Volo.Abp.Account;
+using Volo.Abp.Account;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
@@ -10,6 +10,7 @@ using Volo.Abp.TextTemplateManagement;
 using Volo.Saas.Host;
 using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict;
+using Volo.FileManagement;
 
 namespace OneToManyTest;
 
@@ -28,7 +29,8 @@ namespace OneToManyTest;
     typeof(AbpGdprApplicationContractsModule),
     typeof(TextTemplateManagementApplicationContractsModule)
 )]
-public class OneToManyTestApplicationContractsModule : AbpModule
+[DependsOn(typeof(FileManagementApplicationContractsModule))]
+    public class OneToManyTestApplicationContractsModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
